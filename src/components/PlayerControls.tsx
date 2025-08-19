@@ -1,0 +1,126 @@
+"use client";
+
+import { usePlayerStore } from "@/store/playerStore";
+import { Play, Pause, SkipBack, SkipForward, Repeat, Repeat1, Shuffle, Volume2 } from "lucide-react";
+import { useMemo } from "react";
+
+function formatTime(sec: number): string {
+  if (!isFinite(sec) || sec <= 0) return "0:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2, "0");
+  return `${m}:${s}`;
+}
+
+export default function PlayerControls() {
+  const isPlaying = usePlayerStore((s) => s.isPlaying);
+  const currentTimeSec = usePlayerStore((s) => s.currentTimeSec);
+  const durationSec = usePlayerStore((s) => s.durationSec);
+  const playPause = usePlayerStore((s) => s.playPause);
+  const next = usePlayerStore((s) => s.next);
+  const prev = usePlayerStore((s) => s.prev);
+  const seek = usePlayerStore((s) => s.seek);
+  const setVolume = usePlayerStore((s) => s.setVolume);
+  const volume01 = usePlayerStore((s) => s.volume01);
+  const playbackRate = usePlayerStore((s) => s.playbackRate);
+  const setPlaybackRate = usePlayerStore((s) => s.setPlaybackRate);
+  const queueMode = usePlayerStore((s) => s.queueMode);
+  const setQueueMode = usePlayerStore((s) => s.setQueueMode);
+  const repeatMode = usePlayerStore((s) => s.repeatMode);
+  const setRepeatMode = usePlayerStore((s) => s.setRepeatMode);
+
+  const progressPercent = useMemo(() => {
+    if (!durationSec) return 0;
+    return Math.min(100, Math.max(0, (currentTimeSec / durationSec) * 100));
+  }, [currentTimeSec, durationSec]);
+
+  const sliderMax = useMemo(() => Math.max(durationSec || 0, currentTimeSec || 0, 0), [durationSec, currentTimeSec]);
+  const sliderValue = useMemo(() => Math.min(currentTimeSec || 0, sliderMax || 0), [currentTimeSec, sliderMax]);
+  const volumePercent = useMemo(() => Math.round(Math.max(0, Math.min(1, volume01 || 0)) * 100), [volume01]);
+
+  return (
+    <div className="w-full bg-white/70 dark:bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 rounded-2xl border border-black/10 dark:border-white/10 p-4 shadow-lg neon-ui">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-3 shrink-0">
+          <button aria-label="Previous" onClick={() => prev()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
+          <SkipBack className="size-5" />
+          </button>
+          <button aria-label={isPlaying ? "Pause" : "Play"} onClick={() => playPause()} className="p-3 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 neon-btn">
+          {isPlaying ? <Pause className="size-6" /> : <Play className="size-6" />}
+          </button>
+          <button aria-label="Next" onClick={() => next()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
+          <SkipForward className="size-5" />
+          </button>
+        </div>
+
+        <div className="sm:ml-auto flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300 w-full min-w-0">
+          <span className="tabular-nums shrink-0">{formatTime(currentTimeSec)}</span>
+          <div className="h-1 rounded bg-black/10 dark:bg-white/10 relative flex-1 min-w-0 neon-seek">
+            <div className="absolute left-0 top-0 h-full rounded bg-black dark:bg-white neon-fill" style={{ width: `${progressPercent}%` }} />
+            <input
+              aria-label="Seek"
+              type="range"
+              min={0}
+              max={sliderMax}
+              step={0.1}
+              value={sliderValue}
+              onChange={(e) => seek(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          <span className="tabular-nums shrink-0">{formatTime(durationSec)}</span>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+        <button
+          aria-label="Toggle shuffle"
+          onClick={() => setQueueMode(queueMode === "shuffle" ? "normal" : "shuffle")}
+          className={`px-2 py-1 rounded border neon-btn ${queueMode === "shuffle" ? "bg-black text-white dark:bg-white dark:text-black" : "border-black/10 dark:border-white/10"}`}
+        >
+          <Shuffle className="inline size-4 mr-1" />
+          Shuffle
+        </button>
+        <button
+          aria-label="Cycle repeat"
+          onClick={() => setRepeatMode(repeatMode === "off" ? "all" : repeatMode === "all" ? "one" : "off")}
+          className={`px-2 py-1 rounded border neon-btn ${repeatMode !== "off" ? "bg-black text-white dark:bg-white dark:text-black" : "border-black/10 dark:border-white/10"}`}
+        >
+          {repeatMode === "one" ? <Repeat1 className="inline size-4 mr-1" /> : <Repeat className="inline size-4 mr-1" />}
+          Repeat
+        </button>
+
+        <div className="ml-0 sm:ml-auto flex items-center gap-2 flex-wrap w-full sm:w-auto justify-between sm:justify-end">
+          <Volume2 className="size-4" />
+          <div className="relative h-1 rounded bg-black/10 dark:bg-white/10 neon-seek w-32 sm:w-40">
+            <div className="absolute left-0 top-0 h-full rounded neon-fill" style={{ width: `${volumePercent}%` }} />
+            <div className="absolute -top-1.5 h-4 w-4 rounded-full neon-knob" style={{ left: `calc(${volumePercent}% - 8px)` }} />
+            <input
+              aria-label="Volume"
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={volume01}
+              onChange={(e) => setVolume(Number(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          <select
+            aria-label="Playback rate"
+            value={playbackRate}
+            onChange={(e) => setPlaybackRate(Number(e.target.value))}
+            className="ml-2 rounded border border-black/10 dark:border-white/10 bg-transparent px-2 py-1 neon-select"
+          >
+            {[0.75, 1, 1.25, 1.5, 1.75, 2].map((r) => (
+              <option key={r} value={r} className="bg-white dark:bg-black">{r}x</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
