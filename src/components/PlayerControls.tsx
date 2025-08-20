@@ -6,6 +6,7 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import { useLicenseStore } from "@/store/licenseStore";
 import { useUserStore } from "@/store/userStore";
 import EqualizerDialog from "@/components/EqualizerDialog";
+import ThemedSelect from "@/components/ThemedSelect";
 
 function formatTime(sec: number): string {
   if (!isFinite(sec) || sec <= 0) return "0:00";
@@ -201,22 +202,16 @@ export default function PlayerControls() {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
           </div>
-          <div className="relative ml-2 rate-select">
-            <select
-              aria-label="Playback rate"
-              value={playbackRate}
-              onChange={(e) => {
+          <div className={`ml-2 ${isFree ? "opacity-50 pointer-events-none" : ""}`} title={isFree ? "Upgrade to change playback speed" : undefined}>
+            <ThemedSelect
+              value={String(playbackRate)}
+              onChange={(v) => {
                 if (isFree) return;
-                setPlaybackRate(Number(e.target.value));
+                setPlaybackRate(Number(v));
               }}
-              disabled={isFree}
-              title={isFree ? "Upgrade to change playback speed" : undefined}
-              className="rounded bg-transparent px-2 pr-8 py-1 neon-select"
-            >
-              {(isFree ? [1] : [0.75, 1, 1.25, 1.5, 1.75, 2]).map((r) => (
-                <option key={r} value={r} className="bg-white dark:bg-black">{r}x</option>
-              ))}
-            </select>
+              options={(isFree ? [1] : [0.75, 1, 1.25, 1.5, 1.75, 2]).map((r) => ({ value: String(r), label: `${r}x` }))}
+              className="min-w-[88px]"
+            />
           </div>
         </div>
       </div>
