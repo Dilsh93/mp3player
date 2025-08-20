@@ -105,8 +105,8 @@ export default function PlayerControls() {
           {inlineNotice}
         </div>
       ) : null}
-      <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
-        <div className="flex items-center gap-3 shrink-0">
+      <div className="flex flex-col items-center lg:flex-row lg:items-center gap-3 lg:gap-4">
+        <div className="flex items-center gap-3 shrink-0 w-full justify-center lg:w-auto lg:justify-start">
           <button
             aria-label="Previous"
             onMouseDown={() => scheduleHold("backward")}
@@ -153,7 +153,7 @@ export default function PlayerControls() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 lg:flex lg:flex-wrap lg:items-center gap-3 text-sm">
+      <div className="mt-4 grid grid-cols-1 place-items-center lg:flex lg:flex-wrap lg:items-center lg:justify-center gap-3 text-sm">
         <button
           aria-label="Toggle shuffle"
           disabled={isFree}
@@ -185,7 +185,7 @@ export default function PlayerControls() {
         </div>
 
 
-        <div className="ml-0 lg:ml-auto flex items-center gap-2 flex-wrap w-full lg:w-auto justify-between lg:justify-end">
+        <div className="ml-0 lg:ml-auto flex items-center gap-2 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
           <Volume2 className="size-4" />
           <div className="relative h-1 rounded bg-black/10 dark:bg-white/10 neon-seek w-32 sm:w-40">
             <div className="absolute left-0 top-0 h-full rounded neon-fill" style={{ width: `${volumePercent}%` }} />
