@@ -13,6 +13,9 @@ export default function Visualizer() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+  const touchStartTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!engine) return;
@@ -309,9 +312,38 @@ export default function Visualizer() {
     }
   };
 
+  // Mobile swipe to change visualizer mode
+  function onTouchStart(e: React.TouchEvent<HTMLDivElement>): void {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    touchStartXRef.current = t.clientX;
+    touchStartYRef.current = t.clientY;
+    touchStartTimeRef.current = Date.now();
+  }
+
+  function onTouchEnd(e: React.TouchEvent<HTMLDivElement>): void {
+    if (touchStartXRef.current == null || touchStartYRef.current == null) return;
+    const t = e.changedTouches[0];
+    const dx = (t.clientX || 0) - touchStartXRef.current;
+    const dy = (t.clientY || 0) - touchStartYRef.current;
+    const dt = Date.now() - (touchStartTimeRef.current || Date.now());
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+    touchStartTimeRef.current = null;
+
+    const minDistance = 30; // px
+    const maxOffAxis = 60; // px
+    const maxTimeMs = 800; // quick swipe
+    if (Math.abs(dx) >= minDistance && Math.abs(dy) <= maxOffAxis && dt <= maxTimeMs) {
+      setModeIndex((i) => (i + (dx > 0 ? -1 : 1) + MODE_COUNT) % MODE_COUNT);
+    }
+  }
+
   return (
     <div
       ref={containerRef}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
       onDoubleClick={toggleFullscreen}
       className={`rounded-2xl border border-black/10 dark:border-white/10 neon-card overflow-hidden h-36 ${
         isFullscreen ? "fixed inset-0 z-50 h-screen w-screen cursor-zoom-out" : "cursor-zoom-in"
