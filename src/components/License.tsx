@@ -55,7 +55,7 @@ export default function License() {
             value={key}
             onChange={(e) => setKey(e.target.value)}
             placeholder="xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
-            className="lg:col-span-2 px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
+            className="lg:col-span-2 px-3 py-2 rounded bg-transparent neon-input"
           />
           <ThemedSelect
             value={selectedPlan}
