@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useLicenseStore, LicensePlan } from "@/store/licenseStore";
+import { useUserStore } from "@/store/userStore";
 
 export default function License() {
   const plan = useLicenseStore((s) => s.plan);
   const expiresAt = useLicenseStore((s) => s.expiresAt);
   const activatedAt = useLicenseStore((s) => s.activatedAt);
+  const ownerUserId = useLicenseStore((s) => s.ownerUserId);
   const activationError = useLicenseStore((s) => s.activationError);
   const activate = useLicenseStore((s) => s.activate);
   const deactivate = useLicenseStore((s) => s.deactivate);
   const checkExpiration = useLicenseStore((s) => s.checkExpiration);
+  const currentUserId = useUserStore((s) => s.userId);
+  const setUserId = useUserStore((s) => s.setUserId);
 
   const [key, setKey] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<Exclude<LicensePlan, "free">>("annual");
@@ -20,7 +24,7 @@ export default function License() {
   }, [checkExpiration]);
 
   function onActivate() {
-    activate(selectedPlan, key);
+    activate(selectedPlan, key, currentUserId);
   }
 
   const isActive = plan !== "free";
@@ -45,12 +49,18 @@ export default function License() {
         ) : null}
       </div>
       {!isActive ? (
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-3">
+          <input
+            value={currentUserId ?? ""}
+            onChange={(e) => setUserId(e.target.value)}
+            placeholder="Enter user ID/email"
+            className="px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
+          />
           <input
             value={key}
             onChange={(e) => setKey(e.target.value)}
             placeholder="xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
-            className="col-span-2 px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
+            className="lg:col-span-2 px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
           />
           <select
             value={selectedPlan}
@@ -61,6 +71,11 @@ export default function License() {
             <option value="lifetime">Lifetime</option>
           </select>
           <button onClick={onActivate} className="px-3 py-2 rounded font-medium neon-btn"><span>Activate</span></button>
+        </div>
+      ) : null}
+      {isActive ? (
+        <div className="mt-3 text-xs text-neutral-600 dark:text-neutral-400">
+          Owner: {ownerUserId ?? "-"} {currentUserId && ownerUserId && currentUserId !== ownerUserId ? "(different user: read-only)" : ""}
         </div>
       ) : null}
       {activationError ? (

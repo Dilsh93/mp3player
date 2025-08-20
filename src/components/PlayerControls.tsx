@@ -4,6 +4,7 @@ import { usePlayerStore } from "@/store/playerStore";
 import { Play, Pause, SkipBack, SkipForward, Repeat, Repeat1, Shuffle, Volume2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useLicenseStore } from "@/store/licenseStore";
+import { useUserStore } from "@/store/userStore";
 
 function formatTime(sec: number): string {
   if (!isFinite(sec) || sec <= 0) return "0:00";
@@ -16,7 +17,10 @@ function formatTime(sec: number): string {
 
 export default function PlayerControls() {
   const plan = useLicenseStore((s) => s.plan);
+  const licenseOwner = useLicenseStore((s) => s.ownerUserId);
+  const currentUser = useUserStore((s) => s.userId);
   const isFree = plan === "free";
+  const isForeignUser = !!licenseOwner && !!currentUser && licenseOwner !== currentUser;
   const tracks = usePlayerStore((s) => s.tracks);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
   const currentTimeSec = usePlayerStore((s) => s.currentTimeSec);
@@ -61,7 +65,7 @@ export default function PlayerControls() {
           <button aria-label="Previous" onClick={() => prev()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
           <SkipBack className="size-5" />
           </button>
-          <button aria-label={isPlaying ? "Pause" : "Play"} onClick={() => { if (!tracks || tracks.length === 0) { notifyEmptyLibrary(); return; } playPause(); }} className="p-3 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 neon-btn">
+          <button aria-label={isPlaying ? "Pause" : "Play"} disabled={isForeignUser} title={isForeignUser ? "This license is owned by another user" : undefined} onClick={() => { if (!tracks || tracks.length === 0) { notifyEmptyLibrary(); return; } playPause(); }} className={`p-3 rounded-full hover:opacity-90 neon-btn ${isForeignUser ? "opacity-50 cursor-not-allowed bg-black text-white dark:bg-white dark:text-black" : "bg-black text-white dark:bg-white dark:text-black"}`}>
           {isPlaying ? <Pause className="size-6" /> : <Play className="size-6" />}
           </button>
           <button aria-label="Next" onClick={() => next()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">

@@ -9,8 +9,9 @@ export type LicenseState = {
   licenseKey?: string;
   activatedAt?: number;
   expiresAt?: number;
+  ownerUserId?: string;
   activationError?: string;
-  activate: (plan: Exclude<LicensePlan, "free">, key: string) => void;
+  activate: (plan: Exclude<LicensePlan, "free">, key: string, ownerUserId: string | null) => void;
   deactivate: () => void;
   checkExpiration: () => void;
 };
@@ -35,10 +36,14 @@ export const useLicenseStore = create<LicenseState>()(
       activatedAt: undefined,
       expiresAt: undefined,
       activationError: undefined,
-      activate: (plan, key) => {
+      activate: (plan, key, ownerUserId) => {
         const trimmed = key.trim().toUpperCase();
         if (!isValidKeyFormat(trimmed)) {
           set({ activationError: "Invalid license format. Use xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" });
+          return;
+        }
+        if (!ownerUserId || !ownerUserId.trim()) {
+          set({ activationError: "Please set a user before activating" });
           return;
         }
         const parsed = parseAndValidateKey(trimmed);
@@ -56,23 +61,24 @@ export const useLicenseStore = create<LicenseState>()(
           licenseKey: trimmed,
           activatedAt: now,
           expiresAt: computeExpiry(now, plan),
+          ownerUserId: ownerUserId.trim(),
           activationError: undefined,
         });
       },
       deactivate: () => {
-        set({ plan: "free", licenseKey: undefined, activatedAt: undefined, expiresAt: undefined, activationError: undefined });
+        set({ plan: "free", licenseKey: undefined, activatedAt: undefined, expiresAt: undefined, ownerUserId: undefined, activationError: undefined });
       },
       checkExpiration: () => {
         const { plan, expiresAt } = get();
         if (plan === "annual" && typeof expiresAt === "number" && Date.now() > expiresAt) {
-          set({ plan: "free", licenseKey: undefined, activatedAt: undefined, expiresAt: undefined, activationError: undefined });
+          set({ plan: "free", licenseKey: undefined, activatedAt: undefined, expiresAt: undefined, ownerUserId: undefined, activationError: undefined });
         }
       },
     }),
     {
       name: "mp3player-license",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ plan: state.plan, licenseKey: state.licenseKey, activatedAt: state.activatedAt, expiresAt: state.expiresAt }),
+      partialize: (state) => ({ plan: state.plan, licenseKey: state.licenseKey, activatedAt: state.activatedAt, expiresAt: state.expiresAt, ownerUserId: state.ownerUserId }),
     }
   )
 );

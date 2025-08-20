@@ -8,11 +8,23 @@ import Visualizer from "@/components/Visualizer";
 import License from "@/components/License";
 import { useEffect } from "react";
 import { usePlayerStore } from "@/store/playerStore";
+import { useUserStore } from "@/store/userStore";
 
 export default function Home() {
   const initialize = usePlayerStore((s) => s.initialize);
+  const setUserId = useUserStore((s) => s.setUserId);
   useEffect(() => {
     initialize();
+    const stored = localStorage.getItem("mp3player-user-id");
+    if (!stored) {
+      const id = prompt("Enter your user ID/email to use the player") || "";
+      if (id.trim()) {
+        localStorage.setItem("mp3player-user-id", id.trim());
+        setUserId(id.trim());
+      }
+    } else {
+      setUserId(stored);
+    }
   }, [initialize]);
   return (
     <div className="min-h-screen font-sans bg-gradient-to-br from-white to-neutral-100 dark:from-black dark:to-neutral-900 text-neutral-900 dark:text-neutral-100">
