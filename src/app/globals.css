@@ -311,6 +311,16 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   box-shadow: 0 0 0 1px var(--neon-ring), 0 0 10px var(--neon-ring-soft);
 }
 
+/* Text selection color inside neon input */
+.neon-input::selection {
+  background: color-mix(in oklab, var(--neon-ring) 45%, transparent);
+  color: #0a0a0a;
+}
+.neon-input::-moz-selection {
+  background: color-mix(in oklab, var(--neon-ring) 45%, transparent);
+  color: #0a0a0a;
+}
+
 /* Themed custom dropdown */
 .neon-dropdown { position: relative; }
 .neon-dropdown .select-arrow {
