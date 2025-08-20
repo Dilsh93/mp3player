@@ -83,6 +83,33 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   line-height: 1.25;
   white-space: nowrap;
   box-sizing: border-box;
+  /* Responsive, stable sizing */
+  --btn-py: 0.5rem; /* 8px */
+  --btn-px: 0.75rem; /* 12px */
+  --btn-radius: 0.5rem; /* 8px */
+  --btn-font: 0.875rem; /* 14px */
+  padding: var(--btn-py) var(--btn-px);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-font);
+  min-height: 2.25rem; /* 36px for consistent tap target */
+}
+
+@media (min-width: 640px) {
+  .neon-btn {
+    --btn-py: 0.5rem; /* 8px */
+    --btn-px: 0.875rem; /* 14px */
+    --btn-font: 0.9375rem; /* 15px */
+    min-height: 2.5rem; /* 40px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .neon-btn {
+    --btn-py: 0.5rem; /* 8px */
+    --btn-px: 1rem; /* 16px */
+    --btn-font: 1rem; /* 16px */
+    min-height: 2.5rem; /* 40px */
+  }
 }
 .neon-btn::after {
   content: "";
