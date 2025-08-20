@@ -60,7 +60,7 @@ export default function License() {
             <option value="annual">Annual</option>
             <option value="lifetime">Lifetime</option>
           </select>
-          <button onClick={onActivate} className="px-3 py-2 rounded font-medium neon-btn">Activate</button>
+          <button onClick={onActivate} className="px-3 py-2 rounded font-medium neon-btn"><span>Activate</span></button>
         </div>
       ) : null}
       {activationError ? (
