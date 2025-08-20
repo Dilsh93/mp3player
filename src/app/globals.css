@@ -295,11 +295,16 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   color: #e8e8e8;
   backdrop-filter: saturate(120%) blur(8px);
   -webkit-backdrop-filter: saturate(120%) blur(8px);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid color-mix(in oklab, var(--neon-ring) 18%, rgba(255,255,255,0.08));
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 0 0 1px rgba(0,0,0,0.45);
+  caret-color: var(--neon-ring);
 }
 .neon-input::placeholder {
-  color: color-mix(in oklab, #e8e8e8 60%, transparent);
+  color: color-mix(in oklab, var(--neon-ring) 30%, #e8e8e8);
+}
+.neon-input:hover {
+  border-color: color-mix(in oklab, var(--neon-ring) 35%, rgba(255,255,255,0.08));
+  filter: brightness(1.03);
 }
 .neon-input:focus-visible {
   border-color: color-mix(in oklab, var(--neon-ring) 40%, rgba(255,255,255,0));
