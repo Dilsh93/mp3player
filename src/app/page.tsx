@@ -45,7 +45,7 @@ export default function Home() {
   }, [userId, plan, ownerUserId, setUserId]);
   return (
     <div className="min-h-screen font-sans bg-gradient-to-br from-white to-neutral-100 dark:from-black dark:to-neutral-900 text-neutral-900 dark:text-neutral-100">
-      <div className="max-w-7xl mx-auto p-6 glass-page">
+      <div className="glass-page w-full min-h-[100svh] p-6">
         <header className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -56,7 +56,7 @@ export default function Home() {
           </div>
         </header>
         <Importer />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 flex-1">
           <div className="lg:col-span-2 min-w-0">
             <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur p-4 neon-card max-h-[50vh] md:max-h-[60vh] overflow-auto scroll-modern">
               <TrackList />
