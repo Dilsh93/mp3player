@@ -17,6 +17,7 @@ function formatTime(sec: number): string {
 export default function PlayerControls() {
   const plan = useLicenseStore((s) => s.plan);
   const isFree = plan === "free";
+  const tracks = usePlayerStore((s) => s.tracks);
   const isPlaying = usePlayerStore((s) => s.isPlaying);
   const currentTimeSec = usePlayerStore((s) => s.currentTimeSec);
   const durationSec = usePlayerStore((s) => s.durationSec);
@@ -42,6 +43,27 @@ export default function PlayerControls() {
   const sliderValue = useMemo(() => Math.min(currentTimeSec || 0, sliderMax || 0), [currentTimeSec, sliderMax]);
   const volumePercent = useMemo(() => Math.round(Math.max(0, Math.min(1, volume01 || 0)) * 100), [volume01]);
 
+  function notifyEmptyLibrary(): void {
+    const title = "Library is empty";
+    const body = "Import audio files to start playing.";
+    try {
+      if (typeof window !== "undefined" && "Notification" in window) {
+        if (Notification.permission === "granted") {
+          new Notification(title, { body });
+          return;
+        }
+        if (Notification.permission !== "denied") {
+          Notification.requestPermission().then((perm) => {
+            if (perm === "granted") new Notification(title, { body });
+          }).catch(() => {});
+          return;
+        }
+      }
+    } catch {}
+    // Fallback
+    try { alert(`${title}\n${body}`); } catch {}
+  }
+
   return (
     <div className="w-full bg-white/70 dark:bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 rounded-2xl border border-black/10 dark:border-white/10 p-4 shadow-lg neon-ui">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -49,7 +71,7 @@ export default function PlayerControls() {
           <button aria-label="Previous" onClick={() => prev()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
           <SkipBack className="size-5" />
           </button>
-          <button aria-label={isPlaying ? "Pause" : "Play"} onClick={() => playPause()} className="p-3 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 neon-btn">
+          <button aria-label={isPlaying ? "Pause" : "Play"} onClick={() => { if (!tracks || tracks.length === 0) { notifyEmptyLibrary(); return; } playPause(); }} className="p-3 rounded-full bg-black text-white dark:bg-white dark:text-black hover:opacity-90 neon-btn">
           {isPlaying ? <Pause className="size-6" /> : <Play className="size-6" />}
           </button>
           <button aria-label="Next" onClick={() => next()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
