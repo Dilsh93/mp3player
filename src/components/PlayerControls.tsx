@@ -3,6 +3,7 @@
 import { usePlayerStore } from "@/store/playerStore";
 import { Play, Pause, SkipBack, SkipForward, Repeat, Repeat1, Shuffle, Volume2 } from "lucide-react";
 import { useMemo } from "react";
+import { useLicenseStore } from "@/store/licenseStore";
 
 function formatTime(sec: number): string {
   if (!isFinite(sec) || sec <= 0) return "0:00";
@@ -14,6 +15,8 @@ function formatTime(sec: number): string {
 }
 
 export default function PlayerControls() {
+  const plan = useLicenseStore((s) => s.plan);
+  const isFree = plan === "free";
   const isPlaying = usePlayerStore((s) => s.isPlaying);
   const currentTimeSec = usePlayerStore((s) => s.currentTimeSec);
   const durationSec = usePlayerStore((s) => s.durationSec);
@@ -76,16 +79,26 @@ export default function PlayerControls() {
       <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
         <button
           aria-label="Toggle shuffle"
-          onClick={() => setQueueMode(queueMode === "shuffle" ? "normal" : "shuffle")}
-          className={`px-2 py-1 rounded border neon-btn ${queueMode === "shuffle" ? "bg-black text-white dark:bg-white dark:text-black" : "border-black/10 dark:border-white/10"}`}
+          disabled={isFree}
+          onClick={() => {
+            if (isFree) return;
+            setQueueMode(queueMode === "shuffle" ? "normal" : "shuffle");
+          }}
+          className={`px-2 py-1 rounded border neon-btn ${queueMode === "shuffle" ? "bg-black text-white dark:bg-white dark:text-black" : "border-black/10 dark:border-white/10"} ${isFree ? "opacity-50 cursor-not-allowed" : ""}`}
+          title={isFree ? "Upgrade to unlock Shuffle" : undefined}
         >
           <Shuffle className="inline size-4 mr-1" />
           Shuffle
         </button>
         <button
           aria-label="Cycle repeat"
-          onClick={() => setRepeatMode(repeatMode === "off" ? "all" : repeatMode === "all" ? "one" : "off")}
-          className={`px-2 py-1 rounded border neon-btn ${repeatMode !== "off" ? "bg-black text-white dark:bg-white dark:text-black" : "border-black/10 dark:border-white/10"}`}
+          disabled={isFree}
+          onClick={() => {
+            if (isFree) return;
+            setRepeatMode(repeatMode === "off" ? "all" : repeatMode === "all" ? "one" : "off");
+          }}
+          className={`px-2 py-1 rounded border neon-btn ${repeatMode !== "off" ? "bg-black text-white dark:bg-white dark:text-black" : "border-black/10 dark:border-white/10"} ${isFree ? "opacity-50 cursor-not-allowed" : ""}`}
+          title={isFree ? "Upgrade to unlock Repeat" : undefined}
         >
           {repeatMode === "one" ? <Repeat1 className="inline size-4 mr-1" /> : <Repeat className="inline size-4 mr-1" />}
           Repeat
@@ -110,10 +123,15 @@ export default function PlayerControls() {
           <select
             aria-label="Playback rate"
             value={playbackRate}
-            onChange={(e) => setPlaybackRate(Number(e.target.value))}
+            onChange={(e) => {
+              if (isFree) return;
+              setPlaybackRate(Number(e.target.value));
+            }}
+            disabled={isFree}
+            title={isFree ? "Upgrade to change playback speed" : undefined}
             className="ml-2 rounded border border-black/10 dark:border-white/10 bg-transparent px-2 py-1 neon-select"
           >
-            {[0.75, 1, 1.25, 1.5, 1.75, 2].map((r) => (
+            {(isFree ? [1] : [0.75, 1, 1.25, 1.5, 1.75, 2]).map((r) => (
               <option key={r} value={r} className="bg-white dark:bg-black">{r}x</option>
             ))}
           </select>
