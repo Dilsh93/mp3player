@@ -42,7 +42,7 @@ export default function EqualizerDialog() {
           />
           <div className={`relative z-10 w-full max-w-xl rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card modal-panel ${open ? "open" : ""}`}>
             <div className="flex items-start justify-between gap-3">
-              <h2 className="text-lg font-semibold">Equalizer</h2>
+              <h2 className="text-lg font-semibold neon-text-glow">Equalizer</h2>
               <button onClick={() => setOpen(false)} aria-label="Close" className="px-2 py-1 rounded neon-btn">✕</button>
             </div>
             <div className="mt-3 flex items-center justify-between">

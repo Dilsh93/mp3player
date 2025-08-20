@@ -165,6 +165,14 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   border-color: rgba(0,0,0,0.6) !important;
 }
 
+/* Neon text glow utility */
+.neon-text-glow {
+  text-shadow:
+    0 0 2px var(--neon-ring),
+    0 0 8px var(--neon-ring-soft),
+    0 0 14px var(--neon-ring-soft);
+}
+
 /* Simple marquee animation */
 .marquee {
   position: relative;
