@@ -171,6 +171,14 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     const remaining = get().tracks.filter((t) => t.id !== id);
     let currentTrackId = get().currentTrackId;
     if (currentTrackId === id) currentTrackId = null;
+    if (remaining.length === 0) {
+      const { engine } = get();
+      if (engine) {
+        engine.stop();
+      }
+      set({ tracks: [], currentTrackId: null, isPlaying: false, currentTimeSec: 0, durationSec: 0 });
+      return;
+    }
     set({ tracks: remaining, currentTrackId });
   },
 
@@ -178,6 +186,10 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     // Lazy import to reduce initial bundle
     const { clearAll } = await import("@/lib/db");
     await clearAll();
+    const { engine } = get();
+    if (engine) {
+      engine.stop();
+    }
     set({ tracks: [], currentTrackId: null, isPlaying: false, currentTimeSec: 0, durationSec: 0 });
   },
 }));

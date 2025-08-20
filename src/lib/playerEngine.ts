@@ -51,6 +51,13 @@ export class AudioEngine {
     this.audio.pause();
   }
 
+  public stop(): void {
+    this.audio.pause();
+    try { this.audio.currentTime = 0; } catch {}
+    this.audio.removeAttribute("src");
+    try { this.audio.load(); } catch {}
+  }
+
   public seek(seconds: number): void {
     this.audio.currentTime = Math.max(0, Math.min(seconds, this.audio.duration || seconds));
   }
