@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useLicenseStore, LicensePlan } from "@/store/licenseStore";
+import ThemedSelect from "@/components/ThemedSelect";
 import { useUserStore } from "@/store/userStore";
 
 export default function License() {
@@ -56,14 +57,15 @@ export default function License() {
             placeholder="xxxxx-xxxxx-xxxxx-xxxxx-xxxxx"
             className="lg:col-span-2 px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
           />
-          <select
+          <ThemedSelect
             value={selectedPlan}
-            onChange={(e) => setSelectedPlan(e.target.value as Exclude<LicensePlan, "free">)}
-            className="px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10 neon-select"
-          >
-            <option value="annual">Annual</option>
-            <option value="lifetime">Lifetime</option>
-          </select>
+            onChange={(v) => setSelectedPlan(v as Exclude<LicensePlan, "free">)}
+            options={[
+              { value: "annual", label: "Annual" },
+              { value: "lifetime", label: "Lifetime" },
+            ]}
+            className="w-full"
+          />
           <button onClick={onActivate} className="px-3 py-2 rounded font-medium neon-btn"><span>Activate</span></button>
         </div>
       ) : null}
