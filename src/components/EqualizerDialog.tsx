@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 import ToggleSwitch from "@/components/ToggleSwitch";
 
@@ -15,6 +15,8 @@ export default function EqualizerDialog() {
   const [bands, setBands] = useState<number[]>(DEFAULT_BANDS);
   const [alignTop, setAlignTop] = useState(false);
   const panelRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const [panelPos, setPanelPos] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
     if (!engine) return;
@@ -41,22 +43,58 @@ export default function EqualizerDialog() {
     return () => { cancelAnimationFrame(id); window.removeEventListener("resize", measure); };
   }, [show]);
 
+  // Compute anchored position above the Equalizer button (fallback below)
+  function computePosition() {
+    const btn = buttonRef.current;
+    const panel = panelRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    const viewportW = window.innerWidth || document.documentElement.clientWidth;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight;
+    const panelW = panel?.offsetWidth || 560;
+    const panelH = panel?.offsetHeight || 420;
+    const centerX = rect.left + rect.width / 2;
+    let left = Math.max(8, Math.min(centerX - panelW / 2, viewportW - panelW - 8));
+    let top = rect.top - panelH - 8; // try above
+    if (top < 8) {
+      top = Math.min(viewportH - panelH - 8, rect.bottom + 8); // fallback below
+    }
+    setPanelPos({ top, left });
+  }
+
+  useLayoutEffect(() => {
+    if (!show) return;
+    const id = requestAnimationFrame(computePosition);
+    window.addEventListener("resize", computePosition);
+    window.addEventListener("scroll", computePosition, true);
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener("resize", computePosition);
+      window.removeEventListener("scroll", computePosition, true);
+    };
+  }, [show]);
+
   return (
     <div className="shrink-0">
       <button
+        ref={buttonRef}
         onClick={() => { setShow(true); requestAnimationFrame(() => setOpen(true)); }}
         className="px-3 py-2 rounded neon-btn"
       >
         Equalizer
       </button>
       {show ? (
-        <div className={`fixed inset-0 z-50 flex ${alignTop ? "items-start pt-4" : "items-center"} justify-center p-4`} role="dialog" aria-modal="true" aria-label="Equalizer">
+        <div className={`fixed inset-0 z-50 p-4`} role="dialog" aria-modal="true" aria-label="Equalizer">
           <div
             className={`absolute inset-0 bg-black/40 modal-overlay ${open ? "open" : ""}`}
             onClick={() => setOpen(false)}
             onTransitionEnd={() => { if (!open) setShow(false); }}
           />
-          <div ref={panelRef} className={`relative z-10 w-full max-w-xl rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card modal-panel max-h-[calc(100vh-2rem)] overflow-auto ${open ? "open" : ""}`}>
+          <div
+            ref={panelRef}
+            className={`fixed z-10 w-[min(92vw,44rem)] max-w-xl rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card modal-panel max-h-[calc(100vh-2rem)] overflow-auto ${open ? "open" : ""}`}
+            style={panelPos ? { top: panelPos.top, left: panelPos.left } : undefined}
+          >
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-lg font-semibold neon-text-glow">Equalizer</h2>
               <button onClick={() => setOpen(false)} aria-label="Close" className="px-2 py-1 rounded neon-btn">✕</button>
