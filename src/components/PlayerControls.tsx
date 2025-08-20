@@ -75,7 +75,7 @@ export default function PlayerControls() {
 
         <div className="order-2 lg:order-none lg:ml-auto flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300 w-full min-w-0 flex-nowrap max-w-full">
           <span className="tabular-nums shrink-0">{formatTime(currentTimeSec)}</span>
-          <div className="h-1 rounded bg-black/10 dark:bg-white/10 relative flex-1 min-w-[140px] sm:min-w-[200px] neon-seek">
+          <div className="h-1 rounded bg-black/10 dark:bg-white/10 relative flex-1 min-w-[160px] sm:min-w-[260px] lg:min-w-[360px] neon-seek">
             <div className="absolute left-0 top-0 h-full rounded bg-black dark:bg-white neon-fill" style={{ width: `${progressPercent}%` }} />
             <input
               aria-label="Seek"
