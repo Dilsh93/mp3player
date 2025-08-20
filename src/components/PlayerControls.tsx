@@ -60,7 +60,7 @@ export default function PlayerControls() {
           {inlineNotice}
         </div>
       ) : null}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4">
         <div className="flex items-center gap-3 shrink-0">
           <button aria-label="Previous" onClick={() => prev()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
           <SkipBack className="size-5" />
@@ -73,7 +73,7 @@ export default function PlayerControls() {
           </button>
         </div>
 
-        <div className="sm:ml-auto flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300 w-full min-w-0 flex-nowrap max-w-full">
+        <div className="order-2 lg:order-none lg:ml-auto flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300 w-full min-w-0 flex-nowrap max-w-full">
           <span className="tabular-nums shrink-0">{formatTime(currentTimeSec)}</span>
           <div className="h-1 rounded bg-black/10 dark:bg-white/10 relative flex-1 min-w-[140px] sm:min-w-[200px] neon-seek">
             <div className="absolute left-0 top-0 h-full rounded bg-black dark:bg-white neon-fill" style={{ width: `${progressPercent}%` }} />
@@ -92,7 +92,7 @@ export default function PlayerControls() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+      <div className="mt-4 grid grid-cols-1 lg:flex lg:flex-wrap lg:items-center gap-3 text-sm">
         <button
           aria-label="Toggle shuffle"
           disabled={isFree}
@@ -120,7 +120,7 @@ export default function PlayerControls() {
           Repeat
         </button>
 
-        <div className="ml-0 sm:ml-auto flex items-center gap-2 flex-wrap w-full sm:w-auto justify-between sm:justify-end">
+        <div className="ml-0 lg:ml-auto flex items-center gap-2 flex-wrap w-full lg:w-auto justify-between lg:justify-end">
           <Volume2 className="size-4" />
           <div className="relative h-1 rounded bg-black/10 dark:bg-white/10 neon-seek w-32 sm:w-40">
             <div className="absolute left-0 top-0 h-full rounded neon-fill" style={{ width: `${volumePercent}%` }} />

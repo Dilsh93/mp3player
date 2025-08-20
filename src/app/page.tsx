@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 import { useUserStore } from "@/store/userStore";
 import { useLicenseStore } from "@/store/licenseStore";
+import AboutDialog from "@/components/AboutDialog";
 
 export default function Home() {
   const initialize = usePlayerStore((s) => s.initialize);
@@ -46,8 +47,13 @@ export default function Home() {
     <div className="min-h-screen font-sans bg-gradient-to-br from-white to-neutral-100 dark:from-black dark:to-neutral-900 text-neutral-900 dark:text-neutral-100">
       <div className="max-w-5xl mx-auto p-6">
         <header className="mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Next MP3 Player</h1>
-          <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">Import your audio files and enjoy a modern, beautiful player.</p>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Next MP3 Player</h1>
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">Import your audio files and enjoy a modern, beautiful player.</p>
+            </div>
+            <AboutDialog />
+          </div>
         </header>
         <Importer />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">

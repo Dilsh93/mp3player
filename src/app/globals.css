@@ -158,6 +158,22 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   border-color: rgba(0,0,0,0.6) !important;
 }
 
+/* Simple marquee animation */
+.marquee {
+  position: relative;
+  overflow: hidden;
+}
+.marquee-inner {
+  display: inline-block;
+  white-space: nowrap;
+  min-width: 100%;
+  animation: marquee-scroll 12s linear infinite;
+}
+@keyframes marquee-scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
 /* Track list item subtle neon glow when active */
 .neon-list-item {
   position: relative;
