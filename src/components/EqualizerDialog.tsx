@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 import ToggleSwitch from "@/components/ToggleSwitch";
 
@@ -13,6 +13,8 @@ export default function EqualizerDialog() {
   const [enabled, setEnabled] = useState(false);
   const [bass, setBass] = useState(0);
   const [bands, setBands] = useState<number[]>(DEFAULT_BANDS);
+  const [alignTop, setAlignTop] = useState(false);
+  const panelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!engine) return;
@@ -25,6 +27,20 @@ export default function EqualizerDialog() {
     setBands(next);
   }
 
+  useEffect(() => {
+    if (!show) return;
+    function measure() {
+      const panel = panelRef.current;
+      if (!panel) return;
+      const panelHeight = panel.scrollHeight;
+      const viewport = window.innerHeight || document.documentElement.clientHeight;
+      setAlignTop(panelHeight + 32 > viewport);
+    }
+    const id = requestAnimationFrame(measure);
+    window.addEventListener("resize", measure);
+    return () => { cancelAnimationFrame(id); window.removeEventListener("resize", measure); };
+  }, [show]);
+
   return (
     <div className="shrink-0">
       <button
@@ -34,13 +50,13 @@ export default function EqualizerDialog() {
         Equalizer
       </button>
       {show ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Equalizer">
+        <div className={`fixed inset-0 z-50 flex ${alignTop ? "items-start pt-4" : "items-center"} justify-center p-4`} role="dialog" aria-modal="true" aria-label="Equalizer">
           <div
             className={`absolute inset-0 bg-black/40 modal-overlay ${open ? "open" : ""}`}
             onClick={() => setOpen(false)}
             onTransitionEnd={() => { if (!open) setShow(false); }}
           />
-          <div className={`relative z-10 w-full max-w-xl rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card modal-panel ${open ? "open" : ""}`}>
+          <div ref={panelRef} className={`relative z-10 w-full max-w-xl rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card modal-panel max-h-[calc(100vh-2rem)] overflow-auto ${open ? "open" : ""}`}>
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-lg font-semibold neon-text-glow">Equalizer</h2>
               <button onClick={() => setOpen(false)} aria-label="Close" className="px-2 py-1 rounded neon-btn">✕</button>
