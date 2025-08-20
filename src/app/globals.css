@@ -344,6 +344,21 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   box-shadow: 0 0 8px var(--neon-ring), 0 0 2px var(--neon-ring);
 }
 
+/* Rate select caret overlay */
+.rate-select::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--neon-ring);
+  filter: drop-shadow(0 0 4px var(--neon-ring-soft));
+}
+
 /* Neon input */
 .neon-input {
   background: linear-gradient(180deg, rgba(32,32,32,0.5), rgba(16,16,16,0.35));

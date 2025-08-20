@@ -201,21 +201,23 @@ export default function PlayerControls() {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
           </div>
-          <select
-            aria-label="Playback rate"
-            value={playbackRate}
-            onChange={(e) => {
-              if (isFree) return;
-              setPlaybackRate(Number(e.target.value));
-            }}
-            disabled={isFree}
-            title={isFree ? "Upgrade to change playback speed" : undefined}
-            className="ml-2 rounded border border-black/10 dark:border-white/10 bg-transparent px-2 py-1 neon-select"
-          >
-            {(isFree ? [1] : [0.75, 1, 1.25, 1.5, 1.75, 2]).map((r) => (
-              <option key={r} value={r} className="bg-white dark:bg-black">{r}x</option>
-            ))}
-          </select>
+          <div className="relative ml-2 rate-select">
+            <select
+              aria-label="Playback rate"
+              value={playbackRate}
+              onChange={(e) => {
+                if (isFree) return;
+                setPlaybackRate(Number(e.target.value));
+              }}
+              disabled={isFree}
+              title={isFree ? "Upgrade to change playback speed" : undefined}
+              className="rounded bg-transparent px-2 pr-8 py-1 neon-select"
+            >
+              {(isFree ? [1] : [0.75, 1, 1.25, 1.5, 1.75, 2]).map((r) => (
+                <option key={r} value={r} className="bg-white dark:bg-black">{r}x</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </div>
