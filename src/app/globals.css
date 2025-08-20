@@ -80,8 +80,9 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  line-height: 1.25;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 .neon-btn::after {
   content: "";
@@ -101,7 +102,7 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   box-shadow: 0 0 0 1px var(--neon-ring), 0 0 10px var(--neon-ring-soft), inset 0 0 8px rgba(255,255,255,0.04);
 }
 .neon-btn:active {
-  transform: translateY(0.5px);
+  transform: none;
   filter: brightness(0.96);
 }
 
