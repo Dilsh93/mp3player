@@ -153,7 +153,7 @@ export default function PlayerControls() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 place-items-center lg:flex lg:flex-wrap lg:items-center lg:justify-center gap-3 text-sm">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm">
         <button
           aria-label="Toggle shuffle"
           disabled={isFree}
@@ -180,12 +180,12 @@ export default function PlayerControls() {
           {repeatMode === "one" ? <Repeat1 className="inline size-4 mr-1" /> : <Repeat className="inline size-4 mr-1" />}
           Repeat
         </button>
-        <div>
+        <div className="flex justify-center">
           <EqualizerDialog />
         </div>
 
 
-        <div className="ml-0 lg:ml-auto flex items-center gap-2 flex-wrap w-full lg:w-auto justify-center lg:justify-end">
+        <div className="ml-0 flex items-center gap-2 flex-wrap w-full lg:w-auto justify-center">
           <Volume2 className="size-4" />
           <div className="relative h-1 rounded bg-black/10 dark:bg-white/10 neon-seek w-32 sm:w-40">
             <div className="absolute left-0 top-0 h-full rounded neon-fill" style={{ width: `${volumePercent}%` }} />
