@@ -132,6 +132,9 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
 .neon-btn:focus-visible::after {
   box-shadow: 0 0 0 1px var(--neon-ring), 0 0 10px var(--neon-ring-soft), inset 0 0 8px rgba(255,255,255,0.04);
 }
+.neon-btn.neon-active::after {
+  box-shadow: 0 0 0 1px var(--neon-ring), 0 0 12px var(--neon-ring-soft), inset 0 0 10px rgba(255,255,255,0.05);
+}
 .neon-btn:active {
   transform: none;
   filter: brightness(0.96);
@@ -173,9 +176,30 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   min-width: 100%;
   animation: marquee-scroll 12s linear infinite;
 }
+.marquee-once .marquee-inner {
+  animation: marquee-scroll 10s linear 1;
+}
 @keyframes marquee-scroll {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
+}
+
+/* Modal transitions */
+.modal-overlay {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+}
+.modal-panel {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.modal-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 /* Track list item subtle neon glow when active */
@@ -231,7 +255,7 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   width: var(--thumb-size);
   border-radius: 9999px;
   background: var(--neon-ring);
-  box-shadow: 0 0 8px var(--neon-ring);
+  box-shadow: 0 0 8px var(--neon-ring), 0 0 2px var(--neon-ring);
   margin-top: calc((6px - var(--thumb-size)) / 2);
 }
 .neon-range::-moz-range-thumb {
@@ -240,5 +264,42 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   border: none;
   border-radius: 9999px;
   background: var(--neon-ring);
-  box-shadow: 0 0 8px var(--neon-ring);
+  box-shadow: 0 0 8px var(--neon-ring), 0 0 2px var(--neon-ring);
 }
+
+/* Vertical slider helpers */
+.vslider {
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vertical-range {
+  transform: rotate(-90deg);
+  width: 140px;
+}
+
+/* Modern, neon-styled scrollbar for Equalizer */
+.scroll-modern {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-ring) transparent;
+  scrollbar-gutter: stable both-edges;
+}
+.scroll-modern::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-modern::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--neon-ring) 10%, transparent);
+  border-radius: 9999px;
+}
+.scroll-modern::-webkit-scrollbar-thumb {
+  background: var(--neon-ring);
+  border-radius: 9999px;
+  box-shadow: 0 0 8px var(--neon-ring-soft), inset 0 0 1px rgba(0,0,0,0.2);
+}
+.scroll-modern::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.1);
+}
+/* Modern, neon-styled scrollbar for horizontal scroll areas (Equalizer) */
+

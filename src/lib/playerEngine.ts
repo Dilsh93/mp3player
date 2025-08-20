@@ -12,6 +12,12 @@ export class AudioEngine {
   private audioContext?: AudioContext;
   private mediaSource?: MediaElementAudioSourceNode;
   private analyser?: AnalyserNode;
+  private preGain?: GainNode;
+  private bassShelf?: BiquadFilterNode;
+  private eqFilters?: BiquadFilterNode[];
+  private eqEnabled: boolean = false;
+  private eqBandGainsDb: number[] = [];
+  private bassGainDb: number = 0;
 
   constructor(events: AudioEngineEvents = {}) {
     this.audio = new Audio();
@@ -101,9 +107,10 @@ export class AudioEngine {
       this.analyser = this.audioContext.createAnalyser();
       this.analyser.fftSize = fftSize;
       this.analyser.smoothingTimeConstant = 0.85;
-      // Connect chain: media -> analyser -> destination
-      this.mediaSource.connect(this.analyser);
-      this.analyser.connect(this.audioContext.destination);
+      this.rebuildAudioGraph();
+    } else {
+      // ensure fft size stays in sync
+      this.analyser.fftSize = fftSize;
     }
 
     // Ensure context resumes on user interaction
@@ -119,6 +126,77 @@ export class AudioEngine {
     this.audio.addEventListener("play", ensureResume, { once: true });
 
     return this.analyser;
+  }
+
+  private rebuildAudioGraph(): void {
+    if (!this.audioContext || !this.mediaSource || !this.analyser) return;
+    try {
+      // Disconnect everything first
+      try { this.mediaSource.disconnect(); } catch {}
+      if (this.preGain) { try { this.preGain.disconnect(); } catch {} }
+      if (this.bassShelf) { try { this.bassShelf.disconnect(); } catch {} }
+      if (this.eqFilters && this.eqFilters.length) {
+        for (const f of this.eqFilters) { try { f.disconnect(); } catch {} }
+      }
+      try { this.analyser.disconnect(); } catch {}
+
+      // Build nodes
+      if (!this.preGain) this.preGain = this.audioContext.createGain();
+      if (!this.bassShelf) {
+        this.bassShelf = this.audioContext.createBiquadFilter();
+        this.bassShelf.type = "lowshelf";
+        this.bassShelf.frequency.value = 80; // 80Hz
+      }
+      if (!this.eqFilters || this.eqFilters.length === 0) {
+        const freqs = [170, 350, 1000, 3500, 10000];
+        this.eqFilters = freqs.map((f) => {
+          const biq = this.audioContext!.createBiquadFilter();
+          biq.type = "peaking";
+          biq.frequency.value = f;
+          biq.Q.value = 1.0;
+          return biq;
+        });
+      }
+
+      // Apply current gains
+      this.bassShelf.gain.value = this.bassGainDb || 0;
+      const gains = this.eqBandGainsDb;
+      if (this.eqFilters) {
+        for (let i = 0; i < this.eqFilters.length; i++) {
+          this.eqFilters[i].gain.value = gains?.[i] ?? 0;
+        }
+      }
+
+      // Connect graph depending on EQ enabled
+      if (this.eqEnabled) {
+        // media -> pre -> bass -> eq filters... -> analyser -> destination
+        this.mediaSource.connect(this.preGain);
+        this.preGain.connect(this.bassShelf);
+        let last: AudioNode = this.bassShelf;
+        for (const f of this.eqFilters!) {
+          last.connect(f);
+          last = f;
+        }
+        last.connect(this.analyser);
+      } else {
+        // bypass eq: media -> analyser
+        this.mediaSource.connect(this.analyser);
+      }
+      this.analyser.connect(this.audioContext.destination);
+    } catch {
+      // noop
+    }
+  }
+
+  public configureEqualizer(params: { enabled?: boolean; bandGainsDb?: number[]; bassGainDb?: number }): void {
+    if (!this.audioContext) {
+      // Lazy init audio context graph
+      try { this.getOrCreateAnalyser(); } catch {}
+    }
+    if (typeof params.enabled === "boolean") this.eqEnabled = params.enabled;
+    if (Array.isArray(params.bandGainsDb)) this.eqBandGainsDb = params.bandGainsDb.slice();
+    if (typeof params.bassGainDb === "number") this.bassGainDb = params.bassGainDb;
+    this.rebuildAudioGraph();
   }
 }
 

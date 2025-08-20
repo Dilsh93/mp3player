@@ -4,19 +4,32 @@ import { useState } from "react";
 
 export default function AboutDialog() {
   const [open, setOpen] = useState(false);
+  const [show, setShow] = useState(false);
 
   return (
     <div className="shrink-0">
-      <button onClick={() => setOpen(true)} className="px-3 py-2 rounded neon-btn">About</button>
-      {open ? (
+      <button
+        onClick={() => {
+          setShow(true);
+          requestAnimationFrame(() => setOpen(true));
+        }}
+        className="px-3 py-2 rounded neon-btn"
+      >
+        About
+      </button>
+      {show ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="dialog"
           aria-modal="true"
           aria-label="About"
         >
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <div className="relative z-10 w-full max-w-md rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card">
+          <div
+            className={`absolute inset-0 bg-black/40 modal-overlay ${open ? "open" : ""}`}
+            onClick={() => setOpen(false)}
+            onTransitionEnd={() => { if (!open) setShow(false); }}
+          />
+          <div className={`relative z-10 w-full max-w-md rounded-2xl border border-black/10 dark:border-white/10 bg-white/75 dark:bg-black/60 backdrop-blur p-5 neon-card modal-panel ${open ? "open" : ""}`}>
             <div className="flex items-start justify-between gap-3">
               <h2 className="text-lg font-semibold">About</h2>
               <button onClick={() => setOpen(false)} aria-label="Close" className="px-2 py-1 rounded neon-btn">✕</button>

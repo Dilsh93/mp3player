@@ -80,8 +80,33 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
 
   initialize: async () => {
     const tracks = await getAllTracks();
+
+    // Helpers to persist/restore last session
+    const saveSession = (trackId: TrackId | null, timeSec: number) => {
+      try {
+        if (!trackId) return;
+        localStorage.setItem(
+          "mp3player-session",
+          JSON.stringify({ trackId, timeSec: Math.max(0, Math.floor(timeSec || 0)) })
+        );
+      } catch {}
+    };
+    const loadSession = (): { trackId: TrackId; timeSec: number } | null => {
+      try {
+        const raw = localStorage.getItem("mp3player-session");
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed.trackId === "string") return { trackId: parsed.trackId, timeSec: Number(parsed.timeSec || 0) };
+      } catch {}
+      return null;
+    };
+
     const engine = new AudioEngine({
-      onTimeUpdate: (t, d) => set({ currentTimeSec: t, durationSec: d }),
+      onTimeUpdate: (t, d) => {
+        set({ currentTimeSec: t, durationSec: d });
+        // Persist periodically
+        saveSession(get().currentTrackId, t);
+      },
       onEnded: async () => {
         const idx = pickNextIndex(get());
         if (idx == null) {
@@ -91,9 +116,48 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
         const track = get().tracks[idx];
         await get().playTrackById(track.id);
       },
-      onPlayStateChange: (playing) => set({ isPlaying: playing }),
+      onPlayStateChange: (playing) => {
+        set({ isPlaying: playing });
+        if (!playing) saveSession(get().currentTrackId, get().currentTimeSec);
+      },
     });
     set({ tracks, engine });
+
+    // Restore last session if possible
+    const session = loadSession();
+    if (session) {
+      const found = tracks.find((t) => t.id === session.trackId);
+      if (found) {
+        const blob = await getTrackBlob(found.id);
+        if (blob) {
+          await engine.setSource(blob);
+          // Seek after metadata is ready
+          const audio = engine.getElement();
+          const target = Math.max(0, session.timeSec || 0);
+          const trySeek = () => {
+            try { engine.seek(target); } catch {}
+          };
+          if (isFinite(audio.duration) && audio.duration > 0) {
+            trySeek();
+          } else {
+            audio.addEventListener("loadedmetadata", trySeek, { once: true });
+          }
+          set({ currentTrackId: found.id, isPlaying: false, currentTimeSec: target });
+        }
+      } else {
+        // Session refers to a missing track: ensure player is stopped and session cleared
+        try { engine.stop(); } catch {}
+        try { localStorage.removeItem("mp3player-session"); } catch {}
+        // If other tracks exist, select the first one and autoplay
+        if (tracks.length > 0) {
+          const first = tracks[0];
+          set({ currentTrackId: first.id, isPlaying: true, currentTimeSec: 0, durationSec: 0 });
+          await get().playTrackById(first.id);
+        } else {
+          set({ currentTrackId: null, isPlaying: false, currentTimeSec: 0, durationSec: 0 });
+        }
+      }
+    }
   },
 
   importFiles: async (files: File[]) => {
@@ -167,15 +231,35 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
   setRepeatMode: (m: "off" | "one" | "all") => set({ repeatMode: m }),
 
   removeTrack: async (id: TrackId) => {
+    const prevTracks = get().tracks;
     await removeTrack(id);
-    const remaining = get().tracks.filter((t) => t.id !== id);
-    let currentTrackId = get().currentTrackId;
-    if (currentTrackId === id) currentTrackId = null;
+    const remaining = prevTracks.filter((t) => t.id !== id);
+    const currentTrackId = get().currentTrackId;
+    if (currentTrackId === id) {
+      const { engine } = get();
+      if (engine) {
+        engine.stop();
+      }
+      try { localStorage.removeItem("mp3player-session"); } catch {}
+      // Choose the next track automatically if any remain
+      if (remaining.length > 0) {
+        const removedIndex = prevTracks.findIndex((t) => t.id === id);
+        const nextIndex = removedIndex < remaining.length ? removedIndex : 0;
+        const nextTrack = remaining[nextIndex];
+        set({ tracks: remaining, currentTrackId: nextTrack.id, isPlaying: true, currentTimeSec: 0, durationSec: 0 });
+        // Always continue playback with the next track
+        await get().playTrackById(nextTrack.id);
+      } else {
+        set({ tracks: [], currentTrackId: null, isPlaying: false, currentTimeSec: 0, durationSec: 0 });
+      }
+      return;
+    }
     if (remaining.length === 0) {
       const { engine } = get();
       if (engine) {
         engine.stop();
       }
+      try { localStorage.removeItem("mp3player-session"); } catch {}
       set({ tracks: [], currentTrackId: null, isPlaying: false, currentTimeSec: 0, durationSec: 0 });
       return;
     }
@@ -190,6 +274,7 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     if (engine) {
       engine.stop();
     }
+    try { localStorage.removeItem("mp3player-session"); } catch {}
     set({ tracks: [], currentTrackId: null, isPlaying: false, currentTimeSec: 0, durationSec: 0 });
   },
 }));
