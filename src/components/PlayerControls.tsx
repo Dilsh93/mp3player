@@ -2,7 +2,7 @@
 
 import { usePlayerStore } from "@/store/playerStore";
 import { Play, Pause, SkipBack, SkipForward, Repeat, Repeat1, Shuffle, Volume2 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useLicenseStore } from "@/store/licenseStore";
 
 function formatTime(sec: number): string {
@@ -42,30 +42,20 @@ export default function PlayerControls() {
   const sliderMax = useMemo(() => Math.max(durationSec || 0, currentTimeSec || 0, 0), [durationSec, currentTimeSec]);
   const sliderValue = useMemo(() => Math.min(currentTimeSec || 0, sliderMax || 0), [currentTimeSec, sliderMax]);
   const volumePercent = useMemo(() => Math.round(Math.max(0, Math.min(1, volume01 || 0)) * 100), [volume01]);
+  const [inlineNotice, setInlineNotice] = useState<string | null>(null);
 
   function notifyEmptyLibrary(): void {
-    const title = "Library is empty";
-    const body = "Import audio files to start playing.";
-    try {
-      if (typeof window !== "undefined" && "Notification" in window) {
-        if (Notification.permission === "granted") {
-          new Notification(title, { body });
-          return;
-        }
-        if (Notification.permission !== "denied") {
-          Notification.requestPermission().then((perm) => {
-            if (perm === "granted") new Notification(title, { body });
-          }).catch(() => {});
-          return;
-        }
-      }
-    } catch {}
-    // Fallback
-    try { alert(`${title}\n${body}`); } catch {}
+    setInlineNotice("Library is empty. Import audio files to start playing.");
+    setTimeout(() => setInlineNotice(null), 3000);
   }
 
   return (
     <div className="w-full bg-white/70 dark:bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-white/60 rounded-2xl border border-black/10 dark:border-white/10 p-4 shadow-lg neon-ui">
+      {inlineNotice ? (
+        <div className="mb-3 text-xs sm:text-sm rounded-md border border-yellow-400/40 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 px-3 py-2">
+          {inlineNotice}
+        </div>
+      ) : null}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-3 shrink-0">
           <button aria-label="Previous" onClick={() => prev()} className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 neon-btn">
