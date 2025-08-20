@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { parseAndValidateKey } from "@/lib/licenseKey";
 
 export type LicensePlan = "free" | "annual" | "lifetime";
 
@@ -38,6 +39,15 @@ export const useLicenseStore = create<LicenseState>()(
         const trimmed = key.trim().toUpperCase();
         if (!isValidKeyFormat(trimmed)) {
           set({ activationError: "Invalid license format. Use xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" });
+          return;
+        }
+        const parsed = parseAndValidateKey(trimmed);
+        if (!parsed.valid) {
+          set({ activationError: "Invalid or corrupted license key" });
+          return;
+        }
+        if (parsed.plan !== plan) {
+          set({ activationError: `This key is for ${parsed.plan} plan` });
           return;
         }
         const now = Date.now();

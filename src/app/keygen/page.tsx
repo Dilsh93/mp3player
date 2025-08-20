@@ -6,8 +6,8 @@ import { generateLicenseKey } from "@/lib/licenseKey";
 export default function KeygenPage() {
   const [key, setKey] = useState<string>("");
 
-  function onGenerate() {
-    setKey(generateLicenseKey());
+  function onGenerate(plan: "annual" | "lifetime") {
+    setKey(generateLicenseKey(plan));
   }
 
   function onCopy() {
@@ -21,14 +21,15 @@ export default function KeygenPage() {
         <h1 className="text-2xl font-bold mb-4">License Key Generator</h1>
         <div className="rounded-2xl border border-black/10 dark:border-white/10 p-4 neon-card space-y-3">
           <div className="text-sm text-neutral-600 dark:text-neutral-300">Format: xxxxx-xxxxx-xxxxx-xxxxx-xxxxx</div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <input
               value={key}
               readOnly
               placeholder="Press Generate"
               className="flex-1 px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
             />
-            <button onClick={onGenerate} className="px-3 py-2 rounded neon-btn">Generate</button>
+            <button onClick={() => onGenerate("annual")} className="px-3 py-2 rounded neon-btn">Generate Annual</button>
+            <button onClick={() => onGenerate("lifetime")} className="px-3 py-2 rounded neon-btn">Generate Lifetime</button>
             <button onClick={onCopy} disabled={!key} className="px-3 py-2 rounded neon-btn disabled:opacity-50">Copy</button>
           </div>
         </div>
