@@ -49,13 +49,7 @@ export default function License() {
         ) : null}
       </div>
       {!isActive ? (
-        <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-3">
-          <input
-            value={currentUserId ?? ""}
-            onChange={(e) => setUserId(e.target.value)}
-            placeholder="Enter user ID/email"
-            className="px-3 py-2 rounded bg-transparent border border-black/10 dark:border-white/10"
-          />
+        <div className="mt-3 grid grid-cols-1 lg:grid-cols-3 gap-3">
           <input
             value={key}
             onChange={(e) => setKey(e.target.value)}
