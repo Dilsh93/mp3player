@@ -58,7 +58,7 @@ export default function Home() {
         <Importer />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div className="lg:col-span-2 min-w-0">
-            <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur p-4 neon-card">
+            <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur p-4 neon-card max-h-[50vh] md:max-h-[60vh] overflow-auto scroll-modern">
               <TrackList />
             </div>
           </div>

@@ -345,7 +345,7 @@ export default function Visualizer() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       onDoubleClick={toggleFullscreen}
-      className={`rounded-2xl border border-black/10 dark:border-white/10 neon-card overflow-hidden h-36 ${
+      className={`rounded-2xl border border-black/10 dark:border-white/10 neon-card overflow-hidden h-40 sm:h-52 md:h-64 lg:h-72 xl:h-80 2xl:h-96 ${
         isFullscreen ? "fixed inset-0 z-50 h-screen w-screen cursor-zoom-out" : "cursor-zoom-in"
       }`}
     >

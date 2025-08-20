@@ -26,9 +26,9 @@ export default function NowPlaying() {
   return (
     <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-neutral-100 to-white dark:from-neutral-900 dark:to-black border border-black/10 dark:border-white/10 shadow-sm neon-card">
       {track && track.pictureDataUrl ? (
-        <img src={track.pictureDataUrl} alt="Cover" className="size-20 rounded-lg object-cover shrink-0" />
+        <img src={track.pictureDataUrl} alt="Cover" className="rounded-lg object-cover shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" />
       ) : (
-        <div className="size-20 rounded-lg bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 shrink-0" />
+        <div className="rounded-lg bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24" />
       )}
       <div className="min-w-0">
         <div className="text-lg font-semibold truncate">{track && track.title ? track.title : "No track selected"}</div>
