@@ -45,7 +45,7 @@ export default function Home() {
   }, [userId, plan, ownerUserId, setUserId]);
   return (
     <div className="min-h-screen font-sans bg-gradient-to-br from-white to-neutral-100 dark:from-black dark:to-neutral-900 text-neutral-900 dark:text-neutral-100">
-      <div className="max-w-7xl mx-auto p-6 glass-page rounded-3xl">
+      <div className="max-w-7xl mx-auto p-6 glass-page">
         <header className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-3">
             <div>

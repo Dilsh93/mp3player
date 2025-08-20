@@ -70,7 +70,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  border-radius: 0;
   pointer-events: none;
   background:
     radial-gradient(80% 100% at 0% 0%, color-mix(in oklab, var(--neon-ring) 14%, transparent) 0%, transparent 60%),
@@ -435,3 +435,25 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
 }
 /* Modern, neon-styled scrollbar for horizontal scroll areas (Equalizer) */
 
+/* Global scrollbar theme to match player */
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neon-ring) transparent;
+  scrollbar-gutter: stable both-edges;
+}
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+body::-webkit-scrollbar-track {
+  background: color-mix(in oklab, var(--neon-ring) 10%, transparent);
+  border-radius: 9999px;
+}
+body::-webkit-scrollbar-thumb {
+  background: var(--neon-ring);
+  border-radius: 9999px;
+  box-shadow: 0 0 8px var(--neon-ring-soft), inset 0 0 1px rgba(0,0,0,0.2);
+}
+body::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.1);
+}
