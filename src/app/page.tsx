@@ -5,6 +5,7 @@ import NowPlaying from "@/components/NowPlaying";
 import PlayerControls from "@/components/PlayerControls";
 import TrackList from "@/components/TrackList";
 import Visualizer from "@/components/Visualizer";
+import License from "@/components/License";
 import { useEffect } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 
@@ -29,6 +30,7 @@ export default function Home() {
           </div>
           <div className="space-y-4">
             <Visualizer />
+            <License />
             <NowPlaying />
             <PlayerControls />
           </div>
