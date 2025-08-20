@@ -28,6 +28,16 @@ body {
   color: var(--foreground);
 }
 
+/* Global themed text selection */
+::selection {
+  background: color-mix(in oklab, var(--neon-ring) 45%, transparent);
+  color: #0a0a0a;
+}
+::-moz-selection {
+  background: color-mix(in oklab, var(--neon-ring) 45%, transparent);
+  color: #0a0a0a;
+}
+
 /* App-wide gradient background with subtle neon blur */
 .app-gradient-bg {
   position: fixed;
