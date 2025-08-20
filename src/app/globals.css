@@ -406,7 +406,9 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   -webkit-backdrop-filter: saturate(120%) blur(8px);
   padding: 6px;
   z-index: 50;
+  overflow: auto;
 }
+.neon-dropdown-menu.up { top: auto; bottom: calc(100% + 6px); }
 .neon-dropdown-item {
   padding: 8px 10px; border-radius: 8px; cursor: pointer; color: #e8e8e8;
 }

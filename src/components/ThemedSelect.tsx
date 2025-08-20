@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useLayoutEffect } from "react";
 
 type Option = { value: string; label: string };
 
@@ -15,6 +15,8 @@ export default function ThemedSelect({ value, onChange, options, className }: Th
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
+  const [openUp, setOpenUp] = useState(false);
+  const [menuMaxHeight, setMenuMaxHeight] = useState<number>(240);
 
   const currentLabel = useMemo(() => options.find(o => o.value === value)?.label ?? "Select", [options, value]);
 
@@ -78,6 +80,21 @@ export default function ThemedSelect({ value, onChange, options, className }: Th
     }
   }
 
+  // Decide whether to open upwards or downwards and compute max height
+  useLayoutEffect(() => {
+    if (!open) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const viewportH = window.innerHeight || document.documentElement.clientHeight;
+    const spaceBelow = Math.max(0, viewportH - rect.bottom - 8);
+    const spaceAbove = Math.max(0, rect.top - 8);
+    const preferUp = spaceBelow < 200 && spaceAbove > spaceBelow;
+    setOpenUp(preferUp);
+    const maxH = Math.min(280, preferUp ? spaceAbove : spaceBelow);
+    setMenuMaxHeight(Math.max(140, maxH));
+  }, [open]);
+
   return (
     <div ref={containerRef} className={`neon-dropdown ${className ?? ""}`}>
       <button
@@ -95,7 +112,8 @@ export default function ThemedSelect({ value, onChange, options, className }: Th
         <ul
           role="listbox"
           tabIndex={-1}
-          className="neon-dropdown-menu"
+          className={`neon-dropdown-menu ${openUp ? "up" : ""}`}
+          style={{ maxHeight: `${menuMaxHeight}px` }}
           onKeyDown={onKeyDown}
         >
           {options.map((opt, idx) => (
