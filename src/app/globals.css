@@ -28,6 +28,20 @@ body {
   color: var(--foreground);
 }
 
+/* App-wide gradient background with subtle neon blur */
+.app-gradient-bg {
+  position: fixed;
+  inset: -10%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 60% at 10% 0%, color-mix(in oklab, var(--neon-ring) 22%, transparent) 0%, transparent 60%),
+    radial-gradient(50% 50% at 100% 100%, color-mix(in oklab, #00d1ff 18%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg, color-mix(in oklab, var(--neon-bg) 85%, transparent) 0%, var(--neon-bg) 100%);
+  filter: blur(60px) saturate(115%);
+  transform: scale(1.05);
+}
+
 /* Smooth focus styles for controls */
 input[type="range"], button, select {
   outline: none;
