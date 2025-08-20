@@ -287,6 +287,14 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
   background: var(--neon-surface);
   color: #e8e8e8;
 }
+.neon-select option:hover {
+  background: color-mix(in oklab, var(--neon-ring) 24%, #0f0f0f);
+  color: #f2fff7;
+}
+.neon-select option:checked {
+  background: color-mix(in oklab, var(--neon-ring) 34%, #0f0f0f) !important;
+  color: #f2fff7;
+}
 
 .neon-range {
   --thumb-size: 14px;
