@@ -313,7 +313,7 @@ export default function Visualizer() {
     <div
       ref={containerRef}
       onDoubleClick={toggleFullscreen}
-      className={`rounded-2xl border border-black/10 dark:border-white/10 neon-card overflow-hidden h-28 sm:h-36 ${
+      className={`rounded-2xl border border-black/10 dark:border-white/10 neon-card overflow-hidden h-36 ${
         isFullscreen ? "fixed inset-0 z-50 h-screen w-screen cursor-zoom-out" : "cursor-zoom-in"
       }`}
     >

@@ -26,7 +26,7 @@ export default function Importer() {
   return (
     <div
       {...getRootProps()}
-      className={`rounded-2xl border border-dashed p-4 sm:p-6 text-center transition-colors neon-import neon-card ${
+      className={`rounded-2xl border border-dashed p-5 text-center transition-colors neon-import neon-card ${
         isDragActive ? "border-black dark:border-white bg-black/5 dark:bg-white/10" : "border-black/20 dark:border-white/20"
       }`}
     >
@@ -35,7 +35,7 @@ export default function Importer() {
         <Upload className="size-5" />
         <div className="text-sm">Drag and drop audio files here</div>
       </div>
-      <div className="mt-3">
+      <div className="mt-4">
         <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:opacity-90 neon-btn">
           <Upload className="size-4" />
           <span>{isImporting ? "Importing..." : "Choose files"}</span>
