@@ -11,7 +11,7 @@ import { usePlayerStore } from "@/store/playerStore";
 import { useUserStore } from "@/store/userStore";
 import { useLicenseStore } from "@/store/licenseStore";
 import AboutDialog from "@/components/AboutDialog";
-import { useEffect } from "react";
+ 
 import { setupRemoteControl } from "@/lib/remoteControl";
 
 export default function Home() {
