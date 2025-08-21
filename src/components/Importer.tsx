@@ -13,7 +13,8 @@ try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   Capacitor = require("@capacitor/core").Capacitor;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  FilePicker = require("@capawesome/capacitor-file-picker").FilePicker;
+  // Optional dependency: only used in native builds if installed in the app project
+  try { FilePicker = require("@capawesome/capacitor-file-picker").FilePicker; } catch {}
 } catch {}
 
 export default function Importer() {
@@ -67,7 +68,7 @@ export default function Importer() {
             }}
           />
         </label>
-        {Capacitor?.isNativePlatform?.() ? (
+        {Capacitor?.isNativePlatform?.() && FilePicker ? (
           <button
             type="button"
             onClick={async () => {
