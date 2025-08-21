@@ -14,7 +14,7 @@ try {
   Capacitor = require("@capacitor/core").Capacitor;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   // Optional dependency: only used in native builds if installed in the app project
-  try { FilePicker = require("@capawesome/capacitor-file-picker").FilePicker; } catch {}
+  try { FilePicker = require("@capawesome/capacitor-file-picker").FilePicker; } catch { FilePicker = null; }
 } catch {}
 
 export default function Importer() {
