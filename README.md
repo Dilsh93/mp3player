@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Build a native Android app (Capacitor)
+
+1. Install Android Studio and SDKs.
+2. From project root:
+
+```
+npm install
+npm run build
+npm run cap:add
+npm run cap:sync
+npm run cap:open
+```
+
+3. In Android Studio, build and run on a device. The app loads the exported web from `out/`.
+
+Notes:
+- `Importer` includes an optional Capacitor native file picker when running in the app (requires `@capawesome/capacitor-file-picker`).
+- Ensure storage permissions when picking files.
