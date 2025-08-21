@@ -14,10 +14,10 @@
     "android": "npm run build && npx --yes cap sync android && npx --yes cap open android"
   },
   "dependencies": {
-    "@swc/helpers": "^0.5.17",
     "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.2",
     "@capacitor/core": "^6.1.2",
+    "@swc/helpers": "^0.5.17",
     "localforage": "^1.10.0",
     "lucide-react": "^0.540.0",
     "music-metadata-browser": "^2.5.11",
@@ -28,6 +28,7 @@
     "zustand": "^5.0.7"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.1",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

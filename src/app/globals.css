@@ -242,23 +242,81 @@ button:focus-visible, select:focus-visible, input[type="range"]:focus-visible {
     0 0 14px var(--neon-ring-soft);
 }
 
-/* Simple marquee animation */
+/* Professional marquee animation with fade effects */
 .marquee {
   position: relative;
   overflow: hidden;
+  mask: linear-gradient(90deg, transparent 0%, white 15%, white 85%, transparent 100%);
+  -webkit-mask: linear-gradient(90deg, transparent 0%, white 15%, white 85%, transparent 100%);
+}
+.marquee:hover .marquee-inner {
+  animation-play-state: paused;
+}
+.marquee::before,
+.marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 20px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, currentColor 0%, transparent 100%);
+  opacity: 0.1;
+}
+.marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, currentColor 0%, transparent 100%);
+  opacity: 0.1;
 }
 .marquee-inner {
   display: inline-block;
   white-space: nowrap;
   min-width: 100%;
-  animation: marquee-scroll 12s linear infinite;
+  animation: marquee-scroll 15s linear infinite;
+  animation-delay: 2s;
+  letter-spacing: 0.025em;
+  font-feature-settings: "kern" 1, "liga" 1;
 }
 .marquee-once .marquee-inner {
-  animation: marquee-scroll 10s linear 1;
+  animation: marquee-scroll-once 12s ease-in-out 1;
+  animation-delay: 1s;
+  animation-fill-mode: forwards;
 }
 @keyframes marquee-scroll {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
+  0% { 
+    transform: translateX(100%); 
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(-100%); 
+    opacity: 0;
+  }
+}
+@keyframes marquee-scroll-once {
+  0% { 
+    transform: translateX(20px); 
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(-100%); 
+    opacity: 0;
+  }
 }
 
 /* Modal transitions */
@@ -475,4 +533,18 @@ body::-webkit-scrollbar-thumb {
 }
 body::-webkit-scrollbar-thumb:hover {
   filter: brightness(1.1);
+}
+
+/* Slow spin animation for disc icons */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
 }

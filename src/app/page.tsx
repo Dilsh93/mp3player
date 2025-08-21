@@ -6,7 +6,7 @@ import PlayerControls from "@/components/PlayerControls";
 import TrackList from "@/components/TrackList";
 import Visualizer from "@/components/Visualizer";
 import License from "@/components/License";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePlayerStore } from "@/store/playerStore";
 import { useUserStore } from "@/store/userStore";
 import { useLicenseStore } from "@/store/licenseStore";
@@ -20,6 +20,23 @@ export default function Home() {
   const setUserId = useUserStore((s) => s.setUserId);
   const plan = useLicenseStore((s) => s.plan);
   const ownerUserId = useLicenseStore((s) => s.ownerUserId);
+  const tracks = usePlayerStore((s) => s.tracks);
+  const isPlaying = usePlayerStore((s) => s.isPlaying);
+  const [showLicense, setShowLicense] = useState(false);
+  
+  // Handle escape key to close license modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showLicense) {
+        setShowLicense(false);
+      }
+    };
+    
+    if (showLicense) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [showLicense]);
   useEffect(() => {
     initialize();
   }, [initialize]);
@@ -66,26 +83,81 @@ export default function Home() {
         <header className="mb-6 sm:mb-8">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Next MP3 Player</h1>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[var(--neon-ring)] to-[var(--neon-blue)] bg-clip-text text-transparent animate-gradient-x">Next MP3 Player</h1>
               <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 mt-1">Import your audio files and enjoy a modern, beautiful player.</p>
             </div>
-            <AboutDialog />
-          </div>
-        </header>
-        <Importer />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 flex-1">
-          <div className="lg:col-span-2 min-w-0">
-            <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur p-4 neon-card max-h-[50vh] md:max-h-[60vh] overflow-auto scroll-modern">
-              <TrackList />
+            <div className="flex items-center gap-2">
+              {plan === "free" && (
+                <button
+                  onClick={() => setShowLicense(true)}
+                  className="text-xs px-3 py-1.5 rounded-lg neon-btn bg-gradient-to-r from-[var(--neon-ring)] to-[var(--neon-blue)] text-black font-medium"
+                >
+                  Upgrade
+                </button>
+              )}
+              <AboutDialog />
             </div>
           </div>
-          <div className="space-y-4">
-            <Visualizer />
-            <License />
-            <NowPlaying />
-            <PlayerControls />
-          </div>
+        </header>
+        
+        {tracks.length === 0 && <Importer />}
+        
+        <div className="space-y-6 flex-1">
+          {/* Player UI - Always visible when there are tracks */}
+          {tracks.length > 0 && (
+            <div className="space-y-4">
+              <NowPlaying />
+              <PlayerControls />
+            </div>
+          )}
+          
+          {/* Visualizer - Only show when playing */}
+          {isPlaying && tracks.length > 0 && (
+            <div className="animate-fade-in-up">
+              <Visualizer />
+            </div>
+          )}
+          
+          {/* Track List - Below player */}
+          {tracks.length > 0 && (
+            <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/60 dark:bg-black/40 backdrop-blur p-4 neon-card">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Your Music</h2>
+                <Importer compact />
+              </div>
+              <div className="max-h-[60vh] overflow-auto scroll-modern">
+                <TrackList />
+              </div>
+            </div>
+          )}
         </div>
+        
+        {/* License Modal */}
+        {showLicense && (
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowLicense(false)}
+          >
+            <div 
+              className="bg-white dark:bg-black rounded-2xl border border-black/10 dark:border-white/10 p-6 max-w-md w-full max-h-[80vh] overflow-auto neon-card"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Upgrade to Premium</h2>
+                <button
+                  onClick={() => setShowLicense(false)}
+                  className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  aria-label="Close"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <License />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

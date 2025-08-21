@@ -1,0 +1,5 @@
+[33m1e36ddf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Build: make native picker import fully optional; fix Capacitor config types
+[33m34f3f0f[m Fix build: remove types import from capacitor.config; guard optional native picker module
+[33mefe4bb3[m Fix duplicate useEffect import in page.tsx
+[33m110f682[m CI: trigger Android APK build
+[33m5daad7a[m CI: use npm install in Android workflow; make native file picker optional to avoid lock mismatch

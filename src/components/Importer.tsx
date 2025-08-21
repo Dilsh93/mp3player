@@ -13,7 +13,7 @@ const getNative = () => {
     // Only attempt require when running in a native WebView context and module exists
     if (cap && cap.isNativePlatform && cap.isNativePlatform()) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         const mod = require("@capawesome/capacitor-file-picker");
         return { cap, filePicker: mod?.FilePicker } as const;
       } catch {
@@ -24,7 +24,11 @@ const getNative = () => {
   return { cap: null, filePicker: null } as const;
 };
 
-export default function Importer() {
+interface ImporterProps {
+  compact?: boolean;
+}
+
+export default function Importer({ compact = false }: ImporterProps) {
   const importFiles = usePlayerStore((s) => s.importFiles);
   const [isImporting, setIsImporting] = useState(false);
 
@@ -42,6 +46,35 @@ export default function Importer() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true, accept: { "audio/*": [] } });
 
+  // Compact version - just a button
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2">
+        <label className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm neon-btn cursor-pointer">
+          <Upload className="size-4" />
+          <span>{isImporting ? "Adding..." : "Add Music"}</span>
+          <input
+            type="file"
+            accept="audio/*"
+            multiple
+            className="hidden"
+            onChange={async (e) => {
+              const files = Array.from(e.target.files || []);
+              if (files.length === 0) return;
+              setIsImporting(true);
+              try {
+                await importFiles(files);
+              } finally {
+                setIsImporting(false);
+              }
+            }}
+          />
+        </label>
+      </div>
+    );
+  }
+
+  // Full version - drag and drop area
   return (
     <div
       {...getRootProps()}

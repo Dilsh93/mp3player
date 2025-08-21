@@ -1,11 +1,12 @@
 "use client";
 
 import { usePlayerStore } from "@/store/playerStore";
-import { Trash2 } from "lucide-react";
+import { Trash2, Disc3 } from "lucide-react";
 
 export default function TrackList() {
   const tracks = usePlayerStore((s) => s.tracks);
   const currentTrackId = usePlayerStore((s) => s.currentTrackId);
+  const isPlaying = usePlayerStore((s) => s.isPlaying);
   const playTrackById = usePlayerStore((s) => s.playTrackById);
   const removeTrack = usePlayerStore((s) => s.removeTrack);
   if (tracks.length === 0) {
@@ -20,11 +21,25 @@ export default function TrackList() {
       {tracks.map((t) => (
         <li key={t.id} className={`flex items-center gap-3 py-3 px-2 rounded-lg neon-list-item ${currentTrackId === t.id ? "bg-black/5 dark:bg-white/10" : ""}`}>
           <button onClick={() => playTrackById(t.id)} className="flex items-center gap-3 flex-1 text-left min-w-0" data-focusable="true">
-            {t.pictureDataUrl ? (
-              <img src={t.pictureDataUrl} alt="Cover" className="size-12 rounded object-cover shrink-0" />
-            ) : (
-              <div className="size-12 rounded bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 shrink-0" />
-            )}
+            <div className="relative size-12 shrink-0">
+              {t.pictureDataUrl ? (
+                <img src={t.pictureDataUrl} alt="Cover" className="size-12 rounded object-cover" />
+              ) : (
+                <div className="size-12 rounded bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 flex items-center justify-center">
+                  <Disc3 
+                    className={`size-6 text-neutral-400 dark:text-neutral-500 transition-transform duration-300 ${
+                      currentTrackId === t.id && isPlaying ? 'animate-spin-slow' : ''
+                    }`}
+                  />
+                </div>
+              )}
+              {/* Overlay spinning disc when this track is playing and has album art */}
+              {t.pictureDataUrl && currentTrackId === t.id && isPlaying && (
+                <div className="absolute inset-0 rounded bg-black/20 flex items-center justify-center">
+                  <Disc3 className="size-4 text-white/70 animate-spin-slow" />
+                </div>
+              )}
+            </div>
             <div className="min-w-0">
               <div className="font-medium truncate">{t.title}</div>
               <div className="text-xs text-neutral-600 dark:text-neutral-400 truncate">{t.artist}{t.album ? ` · ${t.album}` : ""}</div>

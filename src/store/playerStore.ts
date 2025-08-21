@@ -127,6 +127,26 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
         if (!playing) saveSession(get().currentTrackId, get().currentTimeSec);
       },
     });
+    // Configure Media Session for better Android background handling
+    try {
+      if ("mediaSession" in navigator) {
+        const ms = (navigator as Navigator & { mediaSession?: MediaSession }).mediaSession;
+        try {
+          const MediaMetadataCtor = (window as Window & { MediaMetadata?: typeof MediaMetadata }).MediaMetadata;
+          if (MediaMetadataCtor) {
+            ms.metadata = new MediaMetadataCtor({ title: "MP3 Player" });
+          }
+        } catch {}
+        if (typeof ms.setActionHandler === "function") {
+          ms.setActionHandler("play", async () => { await get().playPause(); });
+          ms.setActionHandler("pause", async () => { await get().playPause(); });
+          ms.setActionHandler("previoustrack", async () => { await get().prev(); });
+          ms.setActionHandler("nexttrack", async () => { await get().next(); });
+          ms.setActionHandler("seekbackward", (details: MediaSessionActionDetails | undefined) => { const s = Math.max(0, (get().currentTimeSec || 0) - ((details && details.seekOffset) || 10)); get().seek(s); });
+          ms.setActionHandler("seekforward", (details: MediaSessionActionDetails | undefined) => { const s = Math.min(get().durationSec || 0, (get().currentTimeSec || 0) + ((details && details.seekOffset) || 10)); get().seek(s); });
+        }
+      }
+    } catch {}
     set({ tracks, engine });
 
     // Restore last session if possible

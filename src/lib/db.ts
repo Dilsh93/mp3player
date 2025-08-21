@@ -100,10 +100,9 @@ export async function parseAndStoreFiles(files: File[]): Promise<StoredTrack[]> 
         blobStore.setItem(id, new Blob([await file.arrayBuffer()], { type: track.mimeType })),
       ]);
       imported.push(track);
-    } catch (err) {
+    } catch {
       // Skip file on parse error
       // In a real app we might surface a toast here
-      // console.error("Failed to import", file.name, err);
       continue;
     }
   }

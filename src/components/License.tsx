@@ -15,7 +15,6 @@ export default function License() {
   const deactivate = useLicenseStore((s) => s.deactivate);
   const checkExpiration = useLicenseStore((s) => s.checkExpiration);
   const currentUserId = useUserStore((s) => s.userId);
-  const setUserId = useUserStore((s) => s.setUserId);
 
   const [key, setKey] = useState("");
   const [selectedPlan, setSelectedPlan] = useState<Exclude<LicensePlan, "free">>("annual");
