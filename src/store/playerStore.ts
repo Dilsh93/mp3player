@@ -13,6 +13,8 @@ type PlayerState = {
   currentTimeSec: number;
   durationSec: number;
   volume01: number;
+  isMuted?: boolean;
+  lastVolume01?: number;
   playbackRate: number;
   queueMode: QueueMode;
   repeatMode: "off" | "one" | "all";
@@ -31,6 +33,8 @@ type PlayerActions = {
   setPlaybackRate: (r: number) => void;
   setQueueMode: (m: QueueMode) => void;
   setRepeatMode: (m: "off" | "one" | "all") => void;
+  volumeStep?: (delta: number) => void;
+  toggleMute?: () => void;
   removeTrack: (id: TrackId) => Promise<void>;
   clearLibrary: () => Promise<void>;
 };
@@ -73,6 +77,8 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
   currentTimeSec: 0,
   durationSec: 0,
   volume01: 1,
+  isMuted: false,
+  lastVolume01: 1,
   playbackRate: 1,
   queueMode: "normal",
   repeatMode: "off",
@@ -217,7 +223,7 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     const { engine } = get();
     if (!engine) return;
     engine.setVolume(v);
-    set({ volume01: v });
+    set({ volume01: v, isMuted: v === 0 });
   },
 
   setPlaybackRate: (r: number) => {
@@ -225,6 +231,23 @@ export const usePlayerStore = create<PlayerState & PlayerActions>((set, get) => 
     if (!engine) return;
     engine.setPlaybackRate(r);
     set({ playbackRate: r });
+  },
+
+  volumeStep: (delta: number) => {
+    const next = Math.max(0, Math.min(1, (get().volume01 || 0) + delta));
+    get().setVolume(next);
+  },
+
+  toggleMute: () => {
+    const s = get();
+    if (s.volume01 === 0) {
+      const restore = Math.max(0.1, Math.min(1, s.lastVolume01 || 1));
+      get().setVolume(restore);
+      set({ isMuted: false });
+    } else {
+      set({ lastVolume01: s.volume01, isMuted: true });
+      get().setVolume(0);
+    }
   },
 
   setQueueMode: (m: QueueMode) => set({ queueMode: m }),

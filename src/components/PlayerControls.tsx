@@ -110,6 +110,8 @@ export default function PlayerControls() {
         <div className="flex items-center gap-3 shrink-0 w-full justify-center lg:w-auto lg:justify-start">
           <button
             aria-label="Previous"
+            id="btn-prev"
+            data-focusable="true"
             onMouseDown={() => scheduleHold("backward")}
             onMouseUp={(e) => { if (holdActiveRef.current) { e.preventDefault(); stopHold(); return; } stopHold(); prev(); }}
             onMouseLeave={stopHold}
@@ -119,11 +121,13 @@ export default function PlayerControls() {
           >
           <SkipBack className="size-5" />
           </button>
-          <button aria-label={isPlaying ? "Pause" : "Play"} disabled={isForeignUser} title={isForeignUser ? "This license is owned by another user" : undefined} onClick={() => { if (!tracks || tracks.length === 0) { notifyEmptyLibrary(); return; } playPause(); }} className={`p-3 rounded-full hover:opacity-90 neon-btn ${isForeignUser ? "opacity-50 cursor-not-allowed bg-black text-white dark:bg-white dark:text-black" : "bg-black text-white dark:bg-white dark:text-black"}`}>
+          <button aria-label={isPlaying ? "Pause" : "Play"} id="btn-play" data-focusable="true" disabled={isForeignUser} title={isForeignUser ? "This license is owned by another user" : undefined} onClick={() => { if (!tracks || tracks.length === 0) { notifyEmptyLibrary(); return; } playPause(); }} className={`p-3 rounded-full hover:opacity-90 neon-btn ${isForeignUser ? "opacity-50 cursor-not-allowed bg-black text-white dark:bg-white dark:text-black" : "bg-black text-white dark:bg-white dark:text-black"}`}>
           {isPlaying ? <Pause className="size-6" /> : <Play className="size-6" />}
           </button>
           <button
             aria-label="Next"
+            id="btn-next"
+            data-focusable="true"
             onMouseDown={() => scheduleHold("forward")}
             onMouseUp={(e) => { if (holdActiveRef.current) { e.preventDefault(); stopHold(); return; } stopHold(); next(); }}
             onMouseLeave={stopHold}
@@ -158,6 +162,8 @@ export default function PlayerControls() {
         <button
           aria-label="Toggle shuffle"
           disabled={isFree}
+          id="btn-shuffle"
+          data-focusable="true"
           onClick={() => {
             if (isFree) return;
             setQueueMode(queueMode === "shuffle" ? "normal" : "shuffle");
@@ -171,6 +177,8 @@ export default function PlayerControls() {
         <button
           aria-label="Cycle repeat"
           disabled={isFree}
+          id="btn-repeat"
+          data-focusable="true"
           onClick={() => {
             if (isFree) return;
             setRepeatMode(repeatMode === "off" ? "all" : repeatMode === "all" ? "one" : "off");
@@ -193,6 +201,8 @@ export default function PlayerControls() {
             <div className="absolute -top-1.5 h-4 w-4 rounded-full neon-knob" style={{ left: `calc(${volumePercent}% - 8px)` }} />
             <input
               aria-label="Volume"
+              id="input-volume"
+              data-focusable="true"
               type="range"
               min={0}
               max={1}

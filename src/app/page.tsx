@@ -11,6 +11,8 @@ import { usePlayerStore } from "@/store/playerStore";
 import { useUserStore } from "@/store/userStore";
 import { useLicenseStore } from "@/store/licenseStore";
 import AboutDialog from "@/components/AboutDialog";
+import { useEffect } from "react";
+import { setupRemoteControl } from "@/lib/remoteControl";
 
 export default function Home() {
   const initialize = usePlayerStore((s) => s.initialize);
@@ -21,6 +23,21 @@ export default function Home() {
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Global remote-control keyboard mapping
+  useEffect(() => {
+    const cleanup = setupRemoteControl();
+    return cleanup;
+  }, []);
+
+  // Focus a primary control for immediate remote use
+  useEffect(() => {
+    const id = setTimeout(() => {
+      const el = document.getElementById("btn-play") as HTMLElement | null;
+      (el ?? document.querySelector<HTMLElement>("[data-focusable='true']"))?.focus?.();
+    }, 0);
+    return () => clearTimeout(id);
+  }, []);
 
   useEffect(() => {
     if (userId) return;

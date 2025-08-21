@@ -19,7 +19,7 @@ export default function TrackList() {
     <ul className="divide-y divide-black/5 dark:divide-white/10">
       {tracks.map((t) => (
         <li key={t.id} className={`flex items-center gap-3 py-3 px-2 rounded-lg neon-list-item ${currentTrackId === t.id ? "bg-black/5 dark:bg-white/10" : ""}`}>
-          <button onClick={() => playTrackById(t.id)} className="flex items-center gap-3 flex-1 text-left min-w-0">
+          <button onClick={() => playTrackById(t.id)} className="flex items-center gap-3 flex-1 text-left min-w-0" data-focusable="true">
             {t.pictureDataUrl ? (
               <img src={t.pictureDataUrl} alt="Cover" className="size-12 rounded object-cover shrink-0" />
             ) : (
@@ -33,7 +33,7 @@ export default function TrackList() {
           <div className="text-xs tabular-nums text-neutral-600 dark:text-neutral-400 w-12 sm:w-16 text-right shrink-0">
             {typeof t.durationSec === "number" ? `${Math.floor((t.durationSec || 0) / 60)}:${String(Math.floor((t.durationSec || 0) % 60)).padStart(2, "0")}` : "--:--"}
           </div>
-          <button aria-label="Remove" onClick={() => removeTrack(t.id)} className="p-2 rounded hover:bg-black/5 dark:hover:bg-white/10 shrink-0 neon-btn">
+          <button aria-label="Remove" onClick={() => removeTrack(t.id)} className="p-2 rounded hover:bg-black/5 dark:hover:bg-white/10 shrink-0 neon-btn" data-focusable="true">
             <Trash2 className="size-4" />
           </button>
         </li>
